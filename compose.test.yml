@@ -34,7 +34,7 @@ services:
   playwright:
     build:
       context: playwright
-    command: bash -c "sleep 10 && npm test"
+    command: bash -c "sleep 10 && uv run pytest"
     depends_on:
       - wordpress
     environment:
