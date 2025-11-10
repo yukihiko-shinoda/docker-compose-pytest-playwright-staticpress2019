@@ -80,9 +80,9 @@ dependencies = [
 ]
 
 [project.urls]
-homepage = "https://github.com/yukihiko-shinoda/docker-compose-jest-puppeteer-staticpress2019"
+homepage = "https://github.com/yukihiko-shinoda/docker-compose-pytest-playwright-staticpress2019"
 # documentation = "https://readthedocs.org"
-repository = "https://github.com/yukihiko-shinoda/docker-compose-jest-puppeteer-staticpress2019"
+repository = "https://github.com/yukihiko-shinoda/docker-compose-pytest-playwright-staticpress2019"
 # changelog = "https://github.com/me/spam/blob/master/CHANGELOG.md"
 
 [tool.bandit.assert_used]
