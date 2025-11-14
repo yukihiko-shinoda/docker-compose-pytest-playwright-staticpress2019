@@ -1,5 +1,4 @@
-"""
-Main E2E integration test for StaticPress2019.
+"""Main E2E integration test for StaticPress2019.
 
 This replaces __tests__/all.test.ts from the TypeScript version.
 
@@ -8,6 +7,7 @@ Tests:
       set via the admin UI, persisted to the database, and that rebuild
       functionality works correctly.
 """
+
 import os
 import re
 
@@ -31,8 +31,7 @@ PASSWORD = "-JfG+L.3-s!A6YmhsKGkGERc+hq&XswU"
 
 
 def test_sets_option_and_rebuilds(page: Page) -> None:
-    """
-    Test that options are set in database and rebuild works.
+    """Test that options are set in database and rebuild works.
 
     This replaces the "sets option and rebuilds" test from the TypeScript
     version in __tests__/all.test.ts (lines 99-152).
@@ -54,10 +53,66 @@ def test_sets_option_and_rebuilds(page: Page) -> None:
         page: Playwright Page fixture from pytest-playwright.
               Fixtures (setup_wordpress, setup_database_fixtures) run automatically.
     """
-    # Step 1: Navigate to WordPress admin and login
-    page.goto(HOST + "wp-admin/", wait_until="networkidle")
-    page_login = PageLogin(page)
-    page_login.login(USERNAME, PASSWORD)
+    # Step 1: Navigate to WordPress login page and login
+    page.goto(HOST + "wp-login.php", wait_until="networkidle")
+
+    # Check if already logged in (WordPress redirects to dashboard)
+    if "wp-admin" not in page.url:
+        # Need to login
+        login_form = page.locator("input#user_login")
+        if login_form.is_visible(timeout=5000):
+            page_login = PageLogin(page)
+            page_login.login(USERNAME, PASSWORD)
+
+    # Handle admin email confirmation prompt (WordPress 5.3+)
+    # Navigate directly to admin to bypass the confirmation screen
+    if "confirm_admin_email" in page.url:
+        page.goto(HOST + "wp-admin/", wait_until="networkidle")
+
+    # Handle database upgrade screen (when WordPress version changes)
+    # Note: Database version is now updated via fixture, so this should rarely be needed
+    if "upgrade.php" in page.url:
+        upgrade_button = page.locator('a.button:has-text("Update WordPress Database")')
+        if upgrade_button.count() > 0:
+            upgrade_button.click()
+            page.wait_for_load_state("networkidle")
+        # Navigate to admin after upgrade
+        page.goto(HOST + "wp-admin/", wait_until="networkidle")
+    elif "wp-admin" not in page.url:
+        # If not already on admin page, navigate there
+        page.goto(HOST + "wp-admin/", wait_until="networkidle")
+
+    # Check again for upgrade screen after navigation (WordPress might redirect)
+    if "upgrade.php" in page.url:
+        upgrade_button = page.locator('a.button:has-text("Update WordPress Database")')
+        if upgrade_button.count() > 0:
+            upgrade_button.click()
+            page.wait_for_load_state("networkidle")
+        # Navigate to admin after upgrade
+        page.goto(HOST + "wp-admin/", wait_until="networkidle")
+
+    # Handle re-authentication if WordPress asks for it (loop to handle multiple redirects)
+    max_login_attempts = 3
+    login_attempts = 0
+    while "wp-login.php" in page.url and login_attempts < max_login_attempts:
+        login_attempts += 1
+        print(f"Login attempt {login_attempts}, current URL: {page.url}")
+        login_form = page.locator("input#user_login")
+        try:
+            if login_form.is_visible(timeout=2000):
+                page_login = PageLogin(page)
+                page_login.login(USERNAME, PASSWORD)
+                print(f"After login, URL: {page.url}")
+        except Exception as e:
+            print(f"Login form check failed: {e}")
+        # Check if we successfully logged in
+        if "wp-admin" not in page.url:
+            page.goto(HOST + "wp-admin/", wait_until="networkidle")
+            print(f"After navigating to admin, URL: {page.url}")
+
+    # Final debug
+    page.screenshot(path="wp46_before_menu_check.png")
+    print(f"Final URL before menu check: {page.url}")
 
     # Step 2: Navigate to StaticPress Options page
     page_admin = PageAdmin(page)
@@ -89,9 +144,7 @@ def test_sets_option_and_rebuilds(page: Page) -> None:
         )
         row = result.fetchone()
         assert row is not None, "StaticPress::static url option not found in database"
-        assert row[0] == static_url, (
-            f"Static URL mismatch: expected '{static_url}', got '{row[0]}'"
-        )
+        assert row[0] == static_url, f"Static URL mismatch: expected '{static_url}', got '{row[0]}'"
 
         # Verify dump directory
         result = conn.execute(
@@ -100,9 +153,7 @@ def test_sets_option_and_rebuilds(page: Page) -> None:
         )
         row = result.fetchone()
         assert row is not None, "StaticPress::static dir option not found in database"
-        assert row[0] == dump_directory, (
-            f"Dump directory mismatch: expected '{dump_directory}', got '{row[0]}'"
-        )
+        assert row[0] == dump_directory, f"Dump directory mismatch: expected '{dump_directory}', got '{row[0]}'"
 
         # Verify request timeout
         result = conn.execute(
@@ -111,9 +162,7 @@ def test_sets_option_and_rebuilds(page: Page) -> None:
         )
         row = result.fetchone()
         assert row is not None, "StaticPress::timeout option not found in database"
-        assert row[0] == request_timeout, (
-            f"Request timeout mismatch: expected '{request_timeout}', got '{row[0]}'"
-        )
+        assert row[0] == request_timeout, f"Request timeout mismatch: expected '{request_timeout}', got '{row[0]}'"
 
     # Step 5: Navigate to StaticPress rebuild page
     page_admin.hover_menu("StaticPress2019")

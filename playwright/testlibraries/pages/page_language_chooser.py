@@ -1,7 +1,8 @@
-"""
-Page Object Model for WordPress language chooser page.
+"""Page Object Model for WordPress language chooser page.
+
 This replaces PageLanguageChooser.ts from the TypeScript version.
 """
+
 from playwright.sync_api import Page
 
 
@@ -9,8 +10,7 @@ class PageLanguageChooser:
     """WordPress language chooser page interactions (WordPress 5.4.2+)."""
 
     def __init__(self, page: Page):
-        """
-        Initialize PageLanguageChooser with a Playwright page.
+        """Initialize PageLanguageChooser with a Playwright page.
 
         Args:
             page: Playwright Page object
@@ -18,8 +18,7 @@ class PageLanguageChooser:
         self.page = page
 
     def choose(self, language: str) -> None:
-        """
-        Select a language and continue.
+        """Select a language and continue.
 
         This replaces the TypeScript method from PageLanguageChooser.ts.
 
@@ -34,8 +33,7 @@ class PageLanguageChooser:
         self.page.wait_for_load_state("networkidle")
 
     def is_displayed_now(self) -> bool:
-        """
-        Check if the language chooser page is currently displayed.
+        """Check if the language chooser page is currently displayed.
 
         This replaces the TypeScript method from PageLanguageChooser.ts.
 

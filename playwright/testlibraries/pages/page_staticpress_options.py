@@ -1,7 +1,8 @@
-"""
-Page Object Model for StaticPress options page.
+"""Page Object Model for StaticPress options page.
+
 This replaces PageStaticPressOptions.ts from the TypeScript version.
 """
+
 from playwright.sync_api import Page
 
 
@@ -9,8 +10,7 @@ class PageStaticPressOptions:
     """StaticPress plugin options page interactions."""
 
     def __init__(self, page: Page):
-        """
-        Initialize PageStaticPressOptions with a Playwright page.
+        """Initialize PageStaticPressOptions with a Playwright page.
 
         Args:
             page: Playwright Page object
@@ -25,8 +25,7 @@ class PageStaticPressOptions:
         basic_authentication_password: str,
         request_timeout: str,
     ) -> None:
-        """
-        Set StaticPress options and save.
+        """Set StaticPress options and save.
 
         This replaces the TypeScript method from PageStaticPressOptions.ts.
 
@@ -47,8 +46,7 @@ class PageStaticPressOptions:
         self.page.wait_for_load_state("domcontentloaded")
 
     def _clear_and_type(self, css_selector: str, input_text: str) -> None:
-        """
-        Clear an input field and type new text.
+        """Clear an input field and type new text.
 
         This replaces the private TypeScript method from PageStaticPressOptions.ts.
 

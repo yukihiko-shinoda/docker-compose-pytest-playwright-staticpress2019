@@ -1,7 +1,8 @@
-"""
-Page Object Model for WordPress admin navigation.
+"""Page Object Model for WordPress admin navigation.
+
 This replaces PageAdmin.ts from the TypeScript version.
 """
+
 from playwright.sync_api import Locator
 from playwright.sync_api import Page
 
@@ -12,8 +13,7 @@ class PageAdmin:
     """WordPress admin menu navigation interactions."""
 
     def __init__(self, page: Page):
-        """
-        Initialize PageAdmin with a Playwright page.
+        """Initialize PageAdmin with a Playwright page.
 
         Args:
             page: Playwright Page object
@@ -21,8 +21,7 @@ class PageAdmin:
         self.page = page
 
     def hover_menu(self, menu: str) -> None:
-        """
-        Hover over a main menu item.
+        """Hover over a main menu item.
 
         This replaces the TypeScript method from PageAdmin.ts.
 
@@ -34,8 +33,7 @@ class PageAdmin:
         link_handler_menu.hover()
 
     def click_menu(self, menu: str) -> None:
-        """
-        Click a main menu item and wait for page load.
+        """Click a main menu item and wait for page load.
 
         This replaces the TypeScript method from PageAdmin.ts.
 
@@ -47,8 +45,7 @@ class PageAdmin:
         self.page.wait_for_load_state("networkidle")
 
     def wait_for_submenu(self, submenu: str) -> None:
-        """
-        Wait for a submenu item to become visible.
+        """Wait for a submenu item to become visible.
 
         This replaces the TypeScript method from PageAdmin.ts.
 
@@ -59,8 +56,7 @@ class PageAdmin:
         link_handler.wait_for(state="visible")
 
     def click_submenu(self, submenu: str) -> None:
-        """
-        Click a submenu item and wait for page load.
+        """Click a submenu item and wait for page load.
 
         This replaces the TypeScript method from PageAdmin.ts.
 
@@ -72,8 +68,7 @@ class PageAdmin:
         self.page.wait_for_load_state("networkidle")
 
     def _get_link_handler_menu(self, menu: str) -> Locator:
-        """
-        Get locator for a menu item by text.
+        """Get locator for a menu item by text.
 
         This replaces the private TypeScript method from PageAdmin.ts.
 
@@ -95,8 +90,7 @@ class PageAdmin:
         return self._get_link_handler(xpath)
 
     def _get_link_handler_submenu(self, submenu: str) -> Locator:
-        """
-        Get locator for a submenu item by exact text match.
+        """Get locator for a submenu item by exact text match.
 
         This replaces the private TypeScript method from PageAdmin.ts.
 
@@ -115,8 +109,7 @@ class PageAdmin:
         return self._get_link_handler(xpath)
 
     def _get_link_handler(self, xpath: str) -> Locator:
-        """
-        Get first locator matching the given XPath.
+        """Get first locator matching the given XPath.
 
         This replaces the private TypeScript method from PageAdmin.ts.
 

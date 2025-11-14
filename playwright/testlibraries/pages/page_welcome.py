@@ -1,7 +1,8 @@
-"""
-Page Object Model for WordPress installation welcome page.
+"""Page Object Model for WordPress installation welcome page.
+
 This replaces PageWelcome.ts from the TypeScript version.
 """
+
 from playwright.sync_api import Page
 
 
@@ -9,8 +10,7 @@ class PageWelcome:
     """WordPress installation welcome page interactions."""
 
     def __init__(self, page: Page):
-        """
-        Initialize PageWelcome with a Playwright page.
+        """Initialize PageWelcome with a Playwright page.
 
         Args:
             page: Playwright Page object
@@ -18,8 +18,7 @@ class PageWelcome:
         self.page = page
 
     def install(self, site_title: str, user_name: str, password: str, email: str) -> None:
-        """
-        Install WordPress with provided configuration.
+        """Install WordPress with provided configuration.
 
         This replaces the TypeScript method from PageWelcome.ts.
 
@@ -58,8 +57,7 @@ class PageWelcome:
         self.page.wait_for_load_state("networkidle")
 
     def is_displayed_now(self) -> bool:
-        """
-        Check if the WordPress installation welcome page is currently displayed.
+        """Check if the WordPress installation welcome page is currently displayed.
 
         This replaces the TypeScript method from PageWelcome.ts.
 

@@ -1,7 +1,8 @@
-"""
-WordPress wp_users table entity model.
+"""WordPress wp_users table entity model.
+
 This replaces WpUser.ts from the TypeScript version.
 """
+
 from datetime import datetime
 
 from sqlalchemy import BigInteger
@@ -15,8 +16,7 @@ from .wp_option import Base
 
 
 class WpUser(Base):
-    """
-    WordPress users table model.
+    """WordPress users table model.
 
     This replaces the TypeScript TypeORM entity from WpUser.ts.
 
@@ -32,7 +32,7 @@ class WpUser(Base):
         {"schema": "exampledb"},
     )
 
-    ID = Column(BigInteger, primary_key=True, autoincrement=True)  # noqa: N815
+    ID = Column(BigInteger, primary_key=True, autoincrement=True)
     user_login = Column(String(60), nullable=False)
     user_pass = Column(String(255), nullable=False)
     user_nicename = Column(String(50), nullable=False)

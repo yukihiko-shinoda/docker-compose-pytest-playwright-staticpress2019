@@ -1,15 +1,13 @@
-"""
-Fixture validation test for Phase 5.
+"""Fixture validation test for Phase 5.
 
-This test file validates that pytest fixtures are correctly configured
-and execute in the proper order.
+This test file validates that pytest fixtures are correctly configured and execute in the proper order.
 """
+
 import pytest
 
 
 def test_fixture_execution_marker(capsys):
-    """
-    Test that fixtures execute and database setup works.
+    """Test that fixtures execute and database setup works.
 
     This is a minimal test to validate that:
     1. Session fixture (setup_wordpress) runs once
@@ -35,14 +33,13 @@ def test_fixture_execution_marker(capsys):
 
 
 def test_constants_available():
-    """
-    Test that configuration constants are accessible.
+    """Test that configuration constants are accessible.
 
-    Validates that the constants defined in conftest.py can be imported
-    and used in test files.
+    Validates that the constants defined in conftest.py can be imported and used in test files.
     """
     # Import constants from conftest
     import sys
+
     conftest = sys.modules.get("conftest")
     assert conftest is not None, "conftest module should be loaded"
 
@@ -57,8 +54,7 @@ def test_constants_available():
 
 
 def test_page_fixture_available(page):
-    """
-    Test that page fixture is available from pytest-playwright.
+    """Test that page fixture is available from pytest-playwright.
 
     Args:
         page: Playwright Page fixture from pytest-playwright
@@ -71,14 +67,16 @@ def test_page_fixture_available(page):
     print("✓ Page fixture is available from pytest-playwright")
 
 
-@pytest.mark.parametrize("fixture_name", [
-    "browser",
-    "browser_context_args",
-    "browser_type_launch_args",
-])
+@pytest.mark.parametrize(
+    "fixture_name",
+    [
+        "browser",
+        "browser_context_args",
+        "browser_type_launch_args",
+    ],
+)
 def test_playwright_fixtures_configured(fixture_name, request):
-    """
-    Test that Playwright fixtures are properly configured.
+    """Test that Playwright fixtures are properly configured.
 
     Args:
         fixture_name: Name of fixture to test

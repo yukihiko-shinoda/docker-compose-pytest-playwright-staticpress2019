@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Standalone test script to validate Phase 2: Database Layer migration.
+"""Standalone test script to validate Phase 2: Database Layer migration.
 
 This script tests:
 1. Database connection via config.py
@@ -10,12 +9,14 @@ This script tests:
 
 Run with: uv run python test_database_layer.py
 """
+
 import sys
+
 from sqlalchemy import text
 
 from testlibraries.config import get_db_connection
-from testlibraries.table_cleaner import TableCleaner
 from testlibraries.fixture_loader import FixtureLoader
+from testlibraries.table_cleaner import TableCleaner
 
 
 def test_database_connection() -> None:
@@ -52,8 +53,8 @@ def test_table_cleaner() -> None:
                     "'StaticPress::static url', "
                     "'StaticPress::static dir', "
                     "'StaticPress::timeout'"
-                    ")"
-                )
+                    ")",
+                ),
             )
             row = result.fetchone()
             if row and row[0] == 0:
@@ -63,7 +64,7 @@ def test_table_cleaner() -> None:
     except Exception as e:
         error_msg = str(e)
         if "doesn't exist" in error_msg or "Table" in error_msg:
-            print(f"⚠ Skipping TableCleaner test - WordPress tables not found")
+            print("⚠ Skipping TableCleaner test - WordPress tables not found")
             print("  (This is expected if WordPress is not installed yet)")
         else:
             print(f"✗ TableCleaner test failed: {e}")
@@ -91,8 +92,7 @@ def test_fixture_loader() -> None:
                 print(f"✓ StaticPress::static url loaded correctly: {row[0]}")
             else:
                 print(
-                    f"✗ StaticPress::static url mismatch: "
-                    f"expected '{expected_url}', got '{row[0] if row else None}'"
+                    f"✗ StaticPress::static url mismatch: expected '{expected_url}', got '{row[0] if row else None}'",
                 )
                 sys.exit(1)
 
@@ -107,8 +107,7 @@ def test_fixture_loader() -> None:
                 print(f"✓ StaticPress::static dir loaded correctly: {row[0]}")
             else:
                 print(
-                    f"✗ StaticPress::static dir mismatch: "
-                    f"expected '{expected_dir}', got '{row[0] if row else None}'"
+                    f"✗ StaticPress::static dir mismatch: expected '{expected_dir}', got '{row[0] if row else None}'",
                 )
                 sys.exit(1)
 
@@ -123,15 +122,14 @@ def test_fixture_loader() -> None:
                 print(f"✓ StaticPress::timeout loaded correctly: {row[0]}")
             else:
                 print(
-                    f"✗ StaticPress::timeout mismatch: "
-                    f"expected '{expected_timeout}', got '{row[0] if row else None}'"
+                    f"✗ StaticPress::timeout mismatch: expected '{expected_timeout}', got '{row[0] if row else None}'",
                 )
                 sys.exit(1)
 
     except Exception as e:
         error_msg = str(e)
         if "doesn't exist" in error_msg or "Table" in error_msg:
-            print(f"⚠ Skipping FixtureLoader test - WordPress tables not found")
+            print("⚠ Skipping FixtureLoader test - WordPress tables not found")
             print("  (This is expected if WordPress is not installed yet)")
         else:
             print(f"✗ FixtureLoader test failed: {e}")

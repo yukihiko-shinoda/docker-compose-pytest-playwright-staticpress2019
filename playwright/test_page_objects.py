@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""
-Test script for Phase 4: Page Objects migration.
+"""Test script for Phase 4: Page Objects migration.
 
 This script validates that all page object classes are properly defined
 and can be instantiated.
 
 Run with: uv run python test_page_objects.py
 """
+
 import sys
 
 # Test imports
@@ -165,11 +165,11 @@ def test_routine_operation_integration() -> None:
 
     try:
         # These page objects use RoutineOperation
-        from testlibraries.pages.page_admin import PageAdmin
-        from testlibraries.pages.page_plugins import PagePlugins
-
         # Verify they import RoutineOperation in their module
         import inspect
+
+        from testlibraries.pages.page_admin import PageAdmin
+        from testlibraries.pages.page_plugins import PagePlugins
 
         # Check PageAdmin uses RoutineOperation
         admin_source = inspect.getsource(PageAdmin)
@@ -226,10 +226,10 @@ def test_method_signatures() -> None:
     """Test that methods have correct signatures."""
     print("\nTesting method signatures...")
 
+    import inspect
+
     from testlibraries.pages import PageLogin
     from testlibraries.pages import PageStaticPressOptions
-
-    import inspect
 
     # Test PageLogin.login signature
     sig = inspect.signature(PageLogin.login)
@@ -254,7 +254,7 @@ def test_method_signatures() -> None:
     if params == expected:
         print("  ✓ PageStaticPressOptions.set_options has correct signature")
     else:
-        print(f"  ✗ PageStaticPressOptions.set_options signature mismatch")
+        print("  ✗ PageStaticPressOptions.set_options signature mismatch")
         print(f"    Expected: {expected}")
         print(f"    Got: {params}")
         sys.exit(1)

@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""
-Test script for Phase 3: Utility Classes (RoutineOperation).
+"""Test script for Phase 3: Utility Classes (RoutineOperation).
 
 This script validates the XPath escaping and click helper functions.
 
 Run with: uv run python test_routine_operation.py
 """
+
 import sys
 
 from testlibraries.routine_operation import RoutineOperation
@@ -182,9 +182,9 @@ def test_empty_and_whitespace() -> None:
     for input_text, expected in test_cases:
         result = RoutineOperation.escape_xpath_string(input_text)
         if result == expected:
-            print(f"  ✓ '{repr(input_text)}' → {result}")
+            print(f"  ✓ '{input_text!r}' → {result}")
         else:
-            print(f"  ✗ '{repr(input_text)}' failed:")
+            print(f"  ✗ '{input_text!r}' failed:")
             print(f"    Expected: {expected}")
             print(f"    Got:      {result}")
             sys.exit(1)

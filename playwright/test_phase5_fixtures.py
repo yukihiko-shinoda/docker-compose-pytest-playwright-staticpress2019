@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""
-Test script for Phase 5: Pytest Configuration validation.
+"""Test script for Phase 5: Pytest Configuration validation.
 
 This script validates that conftest.py is properly structured and can be
 imported without errors.
 
 Run with: uv run python test_phase5_fixtures.py
 """
+
 import sys
 
 
@@ -43,7 +43,7 @@ def test_conftest_constants() -> None:
     for const in required_constants:
         if hasattr(conftest, const):
             value = getattr(conftest, const)
-            print(f"  ✓ {const} = {repr(value)}")
+            print(f"  ✓ {const} = {value!r}")
         else:
             print(f"  ✗ {const} is not defined")
             sys.exit(1)
@@ -54,7 +54,6 @@ def test_conftest_fixtures() -> None:
     print("\nTesting pytest fixtures...")
 
     import conftest
-    import inspect
 
     expected_fixtures = [
         "browser_context_args",
@@ -104,8 +103,9 @@ def test_conftest_imports_dependencies() -> None:
     """Test that conftest.py imports all required dependencies."""
     print("\nTesting dependency imports...")
 
-    import conftest
     import inspect
+
+    import conftest
 
     # Get the source code
     source = inspect.getsource(conftest)
@@ -136,8 +136,9 @@ def test_fixture_decorators() -> None:
     """Test that fixtures have proper pytest decorators."""
     print("\nTesting fixture decorators...")
 
-    import conftest
     import inspect
+
+    import conftest
 
     # Check session fixtures
     session_fixtures = ["browser_context_args", "browser_type_launch_args", "setup_wordpress"]
@@ -152,8 +153,8 @@ def test_fixture_decorators() -> None:
             print(f"  ⚠ {fixture_name} may be missing fixture decorator")
 
     # Check function fixture
-    func = getattr(conftest, "setup_database_fixtures")
-    print(f"  ✓ setup_database_fixtures has fixture decorator")
+    func = conftest.setup_database_fixtures
+    print("  ✓ setup_database_fixtures has fixture decorator")
 
 
 def test_conftest_docstrings() -> None:
@@ -184,8 +185,9 @@ def test_fixture_references_typescript() -> None:
     """Test that fixtures reference the original TypeScript code."""
     print("\nTesting TypeScript references...")
 
-    import conftest
     import inspect
+
+    import conftest
 
     source = inspect.getsource(conftest)
 

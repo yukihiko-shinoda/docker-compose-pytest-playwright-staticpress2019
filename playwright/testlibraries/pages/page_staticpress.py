@@ -1,7 +1,8 @@
-"""
-Page Object Model for StaticPress rebuild page.
+"""Page Object Model for StaticPress rebuild page.
+
 This replaces PageStaticPress.ts from the TypeScript version.
 """
+
 from playwright.sync_api import Page
 
 
@@ -9,8 +10,7 @@ class PageStaticPress:
     """StaticPress plugin rebuild page interactions."""
 
     def __init__(self, page: Page):
-        """
-        Initialize PageStaticPress with a Playwright page.
+        """Initialize PageStaticPress with a Playwright page.
 
         Args:
             page: Playwright Page object
@@ -18,8 +18,7 @@ class PageStaticPress:
         self.page = page
 
     def click_rebuild(self) -> None:
-        """
-        Click the Rebuild button and wait for rebuild to complete.
+        """Click the Rebuild button and wait for rebuild to complete.
 
         This replaces the TypeScript method from PageStaticPress.ts.
 
@@ -38,10 +37,11 @@ class PageStaticPress:
 
         # Wait for "End" message in #message strong tag (max 3 minutes)
         self.page.locator('xpath=.//p[@id="message"]/strong[text()="End"]').wait_for(
-            state="visible", timeout=3 * 60 * 1000
+            state="visible",
+            timeout=3 * 60 * 1000,
         )
 
         # Wait for expected result in the result list (max 3 minutes)
         self.page.locator(
-            'xpath=.//ul[@class="result-list"]/li[contains(text(), "/tmp/static/sub/index.html")]'
+            'xpath=.//ul[@class="result-list"]/li[contains(text(), "/tmp/static/sub/index.html")]',
         ).wait_for(state="visible", timeout=3 * 60 * 1000)

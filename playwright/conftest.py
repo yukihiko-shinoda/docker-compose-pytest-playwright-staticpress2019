@@ -1,9 +1,8 @@
-"""
-Pytest configuration and fixtures for Playwright tests.
+"""Pytest configuration and fixtures for Playwright tests.
 
-This replaces the beforeAll and beforeEach hooks from the TypeScript version
-in __tests__/all.test.ts.
+This replaces the beforeAll and beforeEach hooks from the TypeScript version in __tests__/all.test.ts.
 """
+
 import os
 
 import pytest
@@ -34,8 +33,7 @@ BASIC_AUTH_PASSWORD = "authpassword"
 
 @pytest.fixture(scope="session")
 def browser_context_args(browser_context_args: dict) -> dict:
-    """
-    Configure browser context with HTTP credentials and viewport.
+    """Configure browser context with HTTP credentials and viewport.
 
     This replaces the httpCredentials and viewport settings from
     playwright.config.ts.
@@ -61,8 +59,7 @@ def browser_context_args(browser_context_args: dict) -> dict:
 
 @pytest.fixture(scope="session")
 def browser_type_launch_args(browser_type_launch_args: dict) -> dict:
-    """
-    Configure browser launch options.
+    """Configure browser launch options.
 
     This replaces the launchOptions from playwright.config.ts.
 
@@ -82,8 +79,7 @@ def browser_type_launch_args(browser_type_launch_args: dict) -> dict:
 
 @pytest.fixture(scope="session", autouse=True)
 def setup_wordpress(browser: Browser) -> None:
-    """
-    One-time setup: Initialize WordPress or login.
+    """One-time setup: Initialize WordPress or login.
 
     This replaces the test.beforeAll hook from the TypeScript version
     in __tests__/all.test.ts (lines 25-56).
@@ -136,9 +132,77 @@ def setup_wordpress(browser: Browser) -> None:
         context.close()
 
 
-def _initialize_wordpress(page: Page) -> None:
+def _deactivate_all_plugins() -> None:
+    """Deactivate all WordPress plugins by clearing the active_plugins option.
+
+    This can be used to troubleshoot plugin issues or reset plugin state.
     """
-    Initialize WordPress installation.
+    from sqlalchemy import text
+
+    from testlibraries.config import get_db_connection
+
+    # Empty PHP serialized array: a:0:{}
+    serialized_value = "a:0:{}"
+
+    with get_db_connection() as conn:
+        # Update active_plugins option with empty array
+        conn.execute(
+            text("UPDATE wp_options SET option_value = :value WHERE option_name = 'active_plugins'"),
+            {"value": serialized_value},
+        )
+
+
+def _activate_staticpress_plugin() -> None:
+    """Activate StaticPress2019 plugin via database."""
+    from sqlalchemy import text
+
+    from testlibraries.config import get_db_connection
+
+    # PHP serialized array with StaticPress2019 plugin
+    # a:1:{i:0;s:26:"staticpress2019/plugin.php";}
+    serialized_value = 'a:1:{i:0;s:26:"staticpress2019/plugin.php";}'
+
+    with get_db_connection() as conn:
+        conn.execute(
+            text("UPDATE wp_options SET option_value = :value WHERE option_name = 'active_plugins'"),
+            {"value": serialized_value},
+        )
+
+
+def _update_database_version() -> None:
+    """Update WordPress database version to avoid upgrade screen.
+
+    This is necessary when testing with different WordPress versions to prevent the database upgrade screen from
+    appearing and causing authentication issues.
+    """
+    from sqlalchemy import text
+
+    from testlibraries.config import get_db_connection
+
+    with get_db_connection() as conn:
+        # Get current WordPress version from wp-includes/version.php equivalent
+        # For WordPress 4.6.1, the db_version is 38590
+        # We set it to a high value that works with most WordPress versions
+        # Common db_versions: 4.6.1=38590, 5.0=38590, 5.5=48748, 5.9=51917
+
+        # First, check if db_version option exists
+        result = conn.execute(text("SELECT option_value FROM wp_options WHERE option_name = 'db_version'"))
+        row = result.fetchone()
+
+        if row:
+            current_version = row[0]
+            print(f"Current database version: {current_version}")
+
+            # Update to WordPress 4.6.1's db_version
+            conn.execute(
+                text("UPDATE wp_options SET option_value = :value WHERE option_name = 'db_version'"),
+                {"value": "38590"},
+            )
+            print("Updated database version to 38590 (WordPress 4.6.1)")
+
+
+def _initialize_wordpress(page: Page) -> None:
+    """Initialize WordPress installation.
 
     This replaces the initialize() function from the TypeScript version
     in __tests__/all.test.ts (lines 58-71).
@@ -163,8 +227,7 @@ def _initialize_wordpress(page: Page) -> None:
 
 
 def _login_wordpress(page: Page) -> None:
-    """
-    Login to WordPress.
+    """Login to WordPress.
 
     This replaces the login() function from the TypeScript version
     in __tests__/all.test.ts (lines 73-77).
@@ -172,15 +235,27 @@ def _login_wordpress(page: Page) -> None:
     Args:
         page: Playwright Page object
     """
-    page.goto(HOST + "wp-admin/", wait_until="networkidle")
+    page.goto(HOST + "wp-login.php", wait_until="networkidle")
+
+    # Check if already logged in (WordPress redirects to dashboard)
+    if "wp-admin" in page.url:
+        print("Already logged in, skipping login")
+        return
+
+    # Check if login form is visible
+    login_form = page.locator("input#user_login")
+    if not login_form.is_visible(timeout=5000):
+        # Already logged in or on a different page
+        print("Login form not visible, assuming already logged in")
+        return
+
     page_login = PageLogin(page)
     page_login.login(USERNAME, PASSWORD)
 
 
 @pytest.fixture(autouse=True)
 def setup_database_fixtures() -> None:
-    """
-    Setup database fixtures before each test.
+    """Setup database fixtures before each test.
 
     This replaces the test.beforeEach hook from the TypeScript version
     in __tests__/all.test.ts (lines 79-92).
@@ -205,6 +280,10 @@ def setup_database_fixtures() -> None:
         print(err)
         raise err or Exception("FixtureLoader.load() failed with empty error")
 
+    # Ensure StaticPress2019 plugin is activated
+    _activate_staticpress_plugin()
+
+    # Update database version to match WordPress version to avoid upgrade screen
+    _update_database_version()
+
     print("Inserted fixtures into the database.")
-    yield
-    # Cleanup after test if needed (currently no cleanup required)

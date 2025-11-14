@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""
-Test script for Phase 6: Main Test File validation.
+"""Test script for Phase 6: Main Test File validation.
 
 This script validates that tests/test_all.py is properly structured and can be
 imported without errors.
 
 Run with: uv run python test_phase6_main_test.py
 """
+
 import sys
 
 
@@ -43,7 +43,7 @@ def test_constants_defined() -> None:
     for const in required_constants:
         if hasattr(test_module, const):
             value = getattr(test_module, const)
-            print(f"  ✓ {const} = {repr(value)}")
+            print(f"  ✓ {const} = {value!r}")
         else:
             print(f"  ✗ {const} is not defined")
             sys.exit(1)
@@ -73,8 +73,9 @@ def test_imports_required_modules() -> None:
     """Test that test_all.py imports all required modules."""
     print("\nTesting required imports...")
 
-    import tests.test_all as test_module
     import inspect
+
+    import tests.test_all as test_module
 
     source = inspect.getsource(test_module)
 
@@ -101,15 +102,16 @@ def test_function_signature() -> None:
     """Test that test function has correct signature."""
     print("\nTesting function signature...")
 
-    import tests.test_all as test_module
     import inspect
+
+    import tests.test_all as test_module
 
     func = test_module.test_sets_option_and_rebuilds
     sig = inspect.signature(func)
     params = list(sig.parameters.keys())
 
     if params == ["page"]:
-        print(f"  ✓ test_sets_option_and_rebuilds has correct signature: (page)")
+        print("  ✓ test_sets_option_and_rebuilds has correct signature: (page)")
     else:
         print(f"  ✗ test_sets_option_and_rebuilds signature mismatch: {params}")
         sys.exit(1)
@@ -139,8 +141,9 @@ def test_references_typescript() -> None:
     """Test that test file references the original TypeScript code."""
     print("\nTesting TypeScript references...")
 
-    import tests.test_all as test_module
     import inspect
+
+    import tests.test_all as test_module
 
     source = inspect.getsource(test_module)
 
@@ -159,8 +162,9 @@ def test_test_structure() -> None:
     """Test that test follows proper structure."""
     print("\nTesting test structure...")
 
-    import tests.test_all as test_module
     import inspect
+
+    import tests.test_all as test_module
 
     source = inspect.getsource(test_module.test_sets_option_and_rebuilds)
 
@@ -186,8 +190,9 @@ def test_database_assertions() -> None:
     """Test that database assertions are present."""
     print("\nTesting database assertions...")
 
-    import tests.test_all as test_module
     import inspect
+
+    import tests.test_all as test_module
 
     source = inspect.getsource(test_module.test_sets_option_and_rebuilds)
 
@@ -210,8 +215,9 @@ def test_playwright_assertions() -> None:
     """Test that Playwright assertions are present."""
     print("\nTesting Playwright assertions...")
 
-    import tests.test_all as test_module
     import inspect
+
+    import tests.test_all as test_module
 
     source = inspect.getsource(test_module.test_sets_option_and_rebuilds)
 
