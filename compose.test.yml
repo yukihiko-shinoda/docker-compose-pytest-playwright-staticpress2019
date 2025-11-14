@@ -24,6 +24,7 @@ services:
       WORDPRESS_CONFIG_EXTRA: |
         define('WP_SITEURL', 'http://wordpress');
         define('WP_HOME', 'http://wordpress');
+        define( 'WP_AUTO_UPDATE_CORE', false );
     image: wordpress-basic-authentication:latest
     ports:
       - 80:80

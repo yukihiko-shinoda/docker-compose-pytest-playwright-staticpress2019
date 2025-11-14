@@ -18,4 +18,4 @@ sed -i "s/$match/$raw\n$insert/" "$file"
 echo "Include mods-available/authz_core.load" >> /etc/apache2/apache2.conf
 
 set +u
-exec docker-entrypoint.sh "${@}"
+exec docker-entrypoint-original.sh "${@}"
