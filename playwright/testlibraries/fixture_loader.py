@@ -66,7 +66,7 @@ class FixtureLoader:
                     """),
                     {
                         "name": "StaticPress::static dir",
-                        "value": "/var/www/web/static/",
+                        "value": "/var/www/html/wp-content/staticpress/",
                         "autoload": "yes",
                     },
                 )
