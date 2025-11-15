@@ -118,10 +118,22 @@ The project uses `.env` files for configuration. Key environment variables:
 ## Development Notes
 
 ### WordPress Compatibility
-The test suite handles multiple WordPress versions:
+The test suite supports multiple WordPress versions from 4.6 to 6.8+:
+
+**Automatic Version Detection:**
+- `_update_database_version()` automatically detects the installed WordPress version
+- Sets appropriate `db_version` to prevent upgrade screens (4.6-6.8 supported)
+- Defaults to latest db_version (58975) for newer versions
+
+**Version-Specific Handling:**
 - Language chooser page only appears in WordPress 5.4.2+
-- Password input: `#pass1` (modern) vs `#pass1-text` (WordPress 4.3)
+- Password input: `#pass1` (modern WordPress) vs `#pass1-text` (WordPress 4.3)
 - Heading tags: `<h2>` (modern) vs `<h1>` (WordPress 4.3)
+- Password hashing: Uses `passlib` with phpass algorithm (compatible with all versions)
+
+**Tested Versions:**
+- WordPress 4.6.x (legacy)
+- WordPress 6.8.3 (latest)
 
 ### Database Fixtures
 Fixtures are stored in `testlibraries/fixtures/`:

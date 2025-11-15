@@ -176,79 +176,124 @@ def _activate_staticpress_plugin() -> None:
 
 
 def _update_database_version() -> None:
-    """Update WordPress database version to avoid upgrade screen.
+    """Update WordPress database version to match the installed WordPress version.
 
-    This is necessary when testing with different WordPress versions to prevent the database upgrade screen from
-    appearing and causing authentication issues.
+    This prevents the database upgrade screen from appearing during tests. Detects the WordPress version and sets the
+    appropriate db_version.
     """
     from sqlalchemy import text
 
     from testlibraries.config import get_db_connection
 
+    # Mapping of WordPress versions to their db_version values
+    # Based on wp-includes/version.php from each WordPress release
+    wp_version_to_db_version = {
+        "6.8": "58975",  # WordPress 6.8.x
+        "6.7": "58975",  # WordPress 6.7.x
+        "6.6": "57155",  # WordPress 6.6.x
+        "6.5": "57155",  # WordPress 6.5.x
+        "6.4": "57155",  # WordPress 6.4.x
+        "6.3": "55853",  # WordPress 6.3.x
+        "6.2": "55853",  # WordPress 6.2.x
+        "6.1": "53496",  # WordPress 6.1.x
+        "6.0": "53496",  # WordPress 6.0.x
+        "5.9": "51917",  # WordPress 5.9.x
+        "5.8": "49752",  # WordPress 5.8.x
+        "5.7": "49752",  # WordPress 5.7.x
+        "5.6": "49752",  # WordPress 5.6.x
+        "5.5": "48748",  # WordPress 5.5.x
+        "5.4": "47018",  # WordPress 5.4.x
+        "5.3": "45805",  # WordPress 5.3.x
+        "5.2": "44719",  # WordPress 5.2.x
+        "5.1": "44719",  # WordPress 5.1.x
+        "5.0": "43764",  # WordPress 5.0.x
+        "4.9": "38590",  # WordPress 4.9.x
+        "4.8": "38590",  # WordPress 4.8.x
+        "4.7": "38590",  # WordPress 4.7.x
+        "4.6": "38590",  # WordPress 4.6.x
+    }
+
     with get_db_connection() as conn:
-        # Get current WordPress version from wp-includes/version.php equivalent
-        # For WordPress 4.6.1, the db_version is 38590
-        # We set it to a high value that works with most WordPress versions
-        # Common db_versions: 4.6.1=38590, 5.0=38590, 5.5=48748, 5.9=51917
+        # Get WordPress version from wp_options
+        result = conn.execute(text("SELECT option_value FROM wp_options WHERE option_name = 'version'"))
+        version_row = result.fetchone()
 
-        # First, check if db_version option exists
-        result = conn.execute(text("SELECT option_value FROM wp_options WHERE option_name = 'db_version'"))
-        row = result.fetchone()
+        if version_row:
+            wp_version = version_row[0]
+            print(f"WordPress version: {wp_version}")
 
-        if row:
-            current_version = row[0]
-            print(f"Current database version: {current_version}")
+            # Extract major.minor version (e.g., "6.8" from "6.8.3")
+            version_parts = wp_version.split(".")
+            major_minor = f"{version_parts[0]}.{version_parts[1]}" if len(version_parts) >= 2 else wp_version
 
-            # Update to WordPress 4.6.1's db_version
-            conn.execute(
-                text("UPDATE wp_options SET option_value = :value WHERE option_name = 'db_version'"),
-                {"value": "38590"},
-            )
-            print("Updated database version to 38590 (WordPress 4.6.1)")
+            # Get appropriate db_version
+            target_db_version = wp_version_to_db_version.get(major_minor, "58975")  # Default to latest
+
+            # Check current db_version
+            result = conn.execute(text("SELECT option_value FROM wp_options WHERE option_name = 'db_version'"))
+            db_row = result.fetchone()
+
+            if db_row:
+                current_db_version = db_row[0]
+                print(f"Current database version: {current_db_version}")
+
+                # Update db_version to match WordPress version
+                conn.execute(
+                    text("UPDATE wp_options SET option_value = :value WHERE option_name = 'db_version'"),
+                    {"value": target_db_version},
+                )
+                print(f"Updated database version to {target_db_version} (WordPress {major_minor}.x)")
+        else:
+            print("WordPress version not found in database - skipping db_version update")
 
 
 def _ensure_test_user_password() -> None:
     """Ensure the test user has the correct password.
 
     Uses passlib to generate WordPress-compatible password hashes (phpass). If the user exists, updates the password to
-    match test expectations. If the user doesn't exist, does nothing (WordPress will show installation page).
+    match test expectations. If the wp_users table doesn't exist, does nothing (WordPress needs to be installed first).
     """
     # Generate WordPress-compatible password hash
     # WordPress uses phpass with 8 iteration rounds and 'P' identifier
     password_hash = phpass.using(rounds=8, ident="P").hash(PASSWORD)
 
-    with get_db_connection() as conn:
-        # First check if ANY users exist
-        result = conn.execute(text("SELECT COUNT(*) FROM wp_users"))
-        total_users = result.fetchone()[0]
+    try:
+        with get_db_connection() as conn:
+            # First check if ANY users exist
+            result = conn.execute(text("SELECT COUNT(*) FROM wp_users"))
+            total_users = result.fetchone()[0]
 
-        if total_users == 0:
-            # No users - database is broken, force WordPress to show installation page
-            # by clearing the siteurl option
-            conn.execute(
-                text("UPDATE wp_options SET option_value = :value WHERE option_name = 'siteurl'"),
-                {"value": ""},
+            if total_users == 0:
+                # No users - database is broken, force WordPress to show installation page
+                # by clearing the siteurl option
+                conn.execute(
+                    text("UPDATE wp_options SET option_value = :value WHERE option_name = 'siteurl'"),
+                    {"value": ""},
+                )
+                print("No users found in database - cleared siteurl to trigger WordPress installation")
+                return
+
+            # Check if test_user specifically exists
+            result = conn.execute(
+                text("SELECT ID FROM wp_users WHERE user_login = :username"),
+                {"username": USERNAME},
             )
-            print("No users found in database - cleared siteurl to trigger WordPress installation")
-            return
+            user_row = result.fetchone()
 
-        # Check if test_user specifically exists
-        result = conn.execute(
-            text("SELECT ID FROM wp_users WHERE user_login = :username"),
-            {"username": USERNAME},
-        )
-        user_row = result.fetchone()
-
-        if user_row:
-            # User exists - update password to match test expectations
-            user_id = user_row[0]
-            conn.execute(
-                text("UPDATE wp_users SET user_pass = :password WHERE ID = :user_id"),
-                {"password": password_hash, "user_id": user_id},
-            )
-            print(f"Updated password for user '{USERNAME}' (ID: {user_id})")
-        else:
-            print(f"User '{USERNAME}' not found (but other users exist) - login may fail")
+            if user_row:
+                # User exists - update password to match test expectations
+                user_id = user_row[0]
+                conn.execute(
+                    text("UPDATE wp_users SET user_pass = :password WHERE ID = :user_id"),
+                    {"password": password_hash, "user_id": user_id},
+                )
+                print(f"Updated password for user '{USERNAME}' (ID: {user_id})")
+            else:
+                print(f"User '{USERNAME}' not found (but other users exist) - login may fail")
+    except Exception as e:
+        # wp_users table doesn't exist yet - WordPress needs to be installed
+        print(f"Cannot check user password - database tables may not exist yet: {e}")
+        return
 
 
 def _initialize_wordpress(page: Page) -> None:
