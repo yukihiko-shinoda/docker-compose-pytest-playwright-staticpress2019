@@ -7,12 +7,15 @@ import os
 
 import pytest
 from dotenv import load_dotenv
+from passlib.hash import phpass
 from playwright.sync_api import Browser
 from playwright.sync_api import Page
+from sqlalchemy import text
 
 from testlibraries import FixtureLoader
 from testlibraries import RoutineOperation
 from testlibraries import TableCleaner
+from testlibraries.config import get_db_connection
 from testlibraries.pages import PageAdmin
 from testlibraries.pages import PageLanguageChooser
 from testlibraries.pages import PageLogin
@@ -92,6 +95,9 @@ def setup_wordpress(browser: Browser) -> None:
     Args:
         browser: Playwright Browser instance from pytest-playwright
     """
+    # Ensure test user exists (will trigger reinstall if needed)
+    _ensure_test_user_password()
+
     context = browser.new_context(
         http_credentials={
             "username": BASIC_AUTH_USERNAME,
@@ -199,6 +205,50 @@ def _update_database_version() -> None:
                 {"value": "38590"},
             )
             print("Updated database version to 38590 (WordPress 4.6.1)")
+
+
+def _ensure_test_user_password() -> None:
+    """Ensure the test user has the correct password.
+
+    Uses passlib to generate WordPress-compatible password hashes (phpass). If the user exists, updates the password to
+    match test expectations. If the user doesn't exist, does nothing (WordPress will show installation page).
+    """
+    # Generate WordPress-compatible password hash
+    # WordPress uses phpass with 8 iteration rounds and 'P' identifier
+    password_hash = phpass.using(rounds=8, ident="P").hash(PASSWORD)
+
+    with get_db_connection() as conn:
+        # First check if ANY users exist
+        result = conn.execute(text("SELECT COUNT(*) FROM wp_users"))
+        total_users = result.fetchone()[0]
+
+        if total_users == 0:
+            # No users - database is broken, force WordPress to show installation page
+            # by clearing the siteurl option
+            conn.execute(
+                text("UPDATE wp_options SET option_value = :value WHERE option_name = 'siteurl'"),
+                {"value": ""},
+            )
+            print("No users found in database - cleared siteurl to trigger WordPress installation")
+            return
+
+        # Check if test_user specifically exists
+        result = conn.execute(
+            text("SELECT ID FROM wp_users WHERE user_login = :username"),
+            {"username": USERNAME},
+        )
+        user_row = result.fetchone()
+
+        if user_row:
+            # User exists - update password to match test expectations
+            user_id = user_row[0]
+            conn.execute(
+                text("UPDATE wp_users SET user_pass = :password WHERE ID = :user_id"),
+                {"password": password_hash, "user_id": user_id},
+            )
+            print(f"Updated password for user '{USERNAME}' (ID: {user_id})")
+        else:
+            print(f"User '{USERNAME}' not found (but other users exist) - login may fail")
 
 
 def _initialize_wordpress(page: Page) -> None:

@@ -77,6 +77,8 @@ dependencies = [
     "cryptography>=41.0.0",
     "python-dotenv>=1.0.0",
     "pyyaml>=6.0",
+    # To hash passwords for Basic Authentication in WordPress before testing
+    "passlib>=1.7.4",
 ]
 
 [project.urls]

@@ -48,7 +48,10 @@ class PageWelcome:
 
         input_password = pass1 if is_pass1_visible else pass1_text
 
-        input_password.click(click_count=3)
+        # Clear the auto-generated password and set our own
+        # WordPress auto-generates a password, so we need to clear it first
+        input_password.click()
+        input_password.press("Control+A")  # Select all text
         input_password.fill(password)
         self.page.fill('input[id="admin_email"]', email)
         self.page.screenshot(path="screenshot.png")
