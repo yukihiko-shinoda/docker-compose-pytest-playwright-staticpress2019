@@ -1,7 +1,8 @@
-"""
-Page Object Models for WordPress and StaticPress pages.
+"""Page Object Models for WordPress and StaticPress pages.
+
 These models replace the TypeScript page objects from the TypeScript version.
 """
+
 from .page_admin import PageAdmin
 from .page_language_chooser import PageLanguageChooser
 from .page_login import PageLogin

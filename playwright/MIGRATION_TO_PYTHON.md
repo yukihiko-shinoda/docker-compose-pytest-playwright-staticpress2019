@@ -922,7 +922,7 @@ Migrate page objects one by one, testing each:
 **Validation**: Test runs in Docker container
 
 #### Phase 8: Cleanup (Day 12)
-1. Remove TypeScript files (or move to `legacy/` folder)
+1. Remove TypeScript files
 2. Remove `node_modules/`, `package.json`, `package-lock.json`
 3. Remove `tsconfig.json`, `playwright.config.ts`
 4. Final testing and validation

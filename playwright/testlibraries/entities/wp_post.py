@@ -1,7 +1,8 @@
-"""
-WordPress wp_posts table entity model.
+"""WordPress wp_posts table entity model.
+
 This replaces WpPost.ts from the TypeScript version.
 """
+
 from datetime import datetime
 
 from sqlalchemy import BigInteger
@@ -16,8 +17,7 @@ from .wp_option import Base
 
 
 class WpPost(Base):
-    """
-    WordPress posts table model.
+    """WordPress posts table model.
 
     This replaces the TypeScript TypeORM entity from WpPost.ts.
 
@@ -34,7 +34,7 @@ class WpPost(Base):
         {"schema": "exampledb"},
     )
 
-    ID = Column(BigInteger, primary_key=True, autoincrement=True)  # noqa: N815
+    ID = Column(BigInteger, primary_key=True, autoincrement=True)
     post_author = Column(BigInteger, default=0, nullable=False)
     post_date = Column(DateTime, default=datetime(1000, 1, 1, 0, 0, 0), nullable=False)
     post_date_gmt = Column(DateTime, default=datetime(1000, 1, 1, 0, 0, 0), nullable=False)

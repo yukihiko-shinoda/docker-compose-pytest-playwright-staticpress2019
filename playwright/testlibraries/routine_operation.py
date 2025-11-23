@@ -1,8 +1,8 @@
-"""
-Routine operations for Playwright page interactions.
+"""Routine operations for Playwright page interactions.
+
 This replaces RoutineOperation.ts from the TypeScript version.
 """
-from playwright.sync_api import Locator
+
 from playwright.sync_api import Page
 
 
@@ -11,8 +11,7 @@ class RoutineOperation:
 
     @staticmethod
     def click_by_text(page: Page, tag: str, text: str) -> None:
-        """
-        Click an element by tag name and text content.
+        """Click an element by tag name and text content.
 
         This replaces the TypeScript method:
         ```typescript
@@ -43,8 +42,7 @@ class RoutineOperation:
 
     @staticmethod
     def escape_xpath_string(text: str) -> str:
-        """
-        Escape a string for safe use in XPath expressions.
+        """Escape a string for safe use in XPath expressions.
 
         This replaces the TypeScript method:
         ```typescript

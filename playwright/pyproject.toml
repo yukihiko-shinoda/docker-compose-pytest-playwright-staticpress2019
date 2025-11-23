@@ -77,12 +77,14 @@ dependencies = [
     "cryptography>=41.0.0",
     "python-dotenv>=1.0.0",
     "pyyaml>=6.0",
+    # To hash passwords for Basic Authentication in WordPress before testing
+    "passlib>=1.7.4",
 ]
 
 [project.urls]
-homepage = "https://github.com/yukihiko-shinoda/docker-compose-jest-puppeteer-staticpress2019"
+homepage = "https://github.com/yukihiko-shinoda/docker-compose-pytest-playwright-staticpress2019"
 # documentation = "https://readthedocs.org"
-repository = "https://github.com/yukihiko-shinoda/docker-compose-jest-puppeteer-staticpress2019"
+repository = "https://github.com/yukihiko-shinoda/docker-compose-pytest-playwright-staticpress2019"
 # changelog = "https://github.com/me/spam/blob/master/CHANGELOG.md"
 
 [tool.bandit.assert_used]

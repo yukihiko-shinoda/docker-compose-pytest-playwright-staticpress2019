@@ -24,12 +24,18 @@ services:
       WORDPRESS_CONFIG_EXTRA: |
         define('WP_SITEURL', 'http://wordpress');
         define('WP_HOME', 'http://wordpress');
+        define( 'WP_AUTO_UPDATE_CORE', false );
+        # To output debug info to wp-content/debug.log
+        define( 'WP_DEBUG', true );
+        define( 'WP_DEBUG_LOG', true );
     image: wordpress-basic-authentication:latest
     ports:
       - 80:80
     restart: always
     volumes:
       - ${PATH_TO_PLUGIN_DIRECTORY}:/var/www/html/wp-content/plugins
+      # To access codes from playwright container for development and testing
+      - wordpress_content:/var/www/html/wp-content
 
   playwright:
     build:
@@ -42,4 +48,13 @@ services:
       DATABASE_HOST: database
     image: futureys/playwright-staticpress2019:latest
     ports:
+      # To access Playwright Test Report UI
       - 9323:9323
+    # To access codes from playwright container for development and testing
+    volumes:
+      - ${PATH_TO_PLUGIN_DIRECTORY}:/wordpress_content/plugins
+      - wordpress_content:/wordpress_content:ro
+
+volumes:
+  # To access codes from playwright container for development and testing
+  wordpress_content:

@@ -1,11 +1,14 @@
-"""
-Database configuration for SQLAlchemy.
+"""Database configuration for SQLAlchemy.
+
 This replaces ormconfig.ts from the TypeScript version.
 """
+
 import os
 from contextlib import contextmanager
+
 from dotenv import load_dotenv
-from sqlalchemy import create_engine, Engine
+from sqlalchemy import Engine
+from sqlalchemy import create_engine
 from sqlalchemy.engine import Connection
 
 load_dotenv()
@@ -35,8 +38,7 @@ ENGINE_OPTIONS = {
 
 @contextmanager
 def get_db_connection() -> Connection:
-    """
-    Context manager for database connections.
+    """Context manager for database connections.
 
     This replaces the TypeORM DataSource pattern:
     ```typescript

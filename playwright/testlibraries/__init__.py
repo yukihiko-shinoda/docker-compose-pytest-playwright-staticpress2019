@@ -1,7 +1,8 @@
-"""
-Test libraries for StaticPress integration tests.
+"""Test libraries for StaticPress integration tests.
+
 This package contains utilities for database operations and page objects.
 """
+
 from .config import DATABASE_CONFIG
 from .config import DATABASE_URL
 from .config import ENGINE_OPTIONS
@@ -14,8 +15,8 @@ __all__ = [
     "DATABASE_CONFIG",
     "DATABASE_URL",
     "ENGINE_OPTIONS",
-    "get_db_connection",
     "FixtureLoader",
     "RoutineOperation",
     "TableCleaner",
+    "get_db_connection",
 ]

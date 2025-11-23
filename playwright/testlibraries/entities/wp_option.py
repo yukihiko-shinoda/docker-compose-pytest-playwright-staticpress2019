@@ -1,7 +1,8 @@
-"""
-WordPress wp_options table entity model.
+"""WordPress wp_options table entity model.
+
 This replaces WpOption.ts from the TypeScript version.
 """
+
 from sqlalchemy import BigInteger
 from sqlalchemy import Column
 from sqlalchemy import Index
@@ -15,8 +16,7 @@ class Base(DeclarativeBase):
 
 
 class WpOption(Base):
-    """
-    WordPress options table model.
+    """WordPress options table model.
 
     This replaces the TypeScript TypeORM entity:
     ```typescript

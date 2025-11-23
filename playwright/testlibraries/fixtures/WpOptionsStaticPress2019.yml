@@ -6,7 +6,7 @@ items:
     autoload: 'yes'
   wpoption2:
     optionName: 'StaticPress::static dir'
-    optionValue: '/var/www/web/static/'
+    optionValue: '/var/www/html/wp-content/staticpress/'
     autoload: 'yes'
   wpoption3:
     optionName: 'StaticPress::timeout'

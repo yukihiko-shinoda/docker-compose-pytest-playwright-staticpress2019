@@ -1,7 +1,8 @@
-"""
-Table cleaner for StaticPress options.
+"""Table cleaner for StaticPress options.
+
 This replaces TableCleaner.ts from the TypeScript version.
 """
+
 from sqlalchemy import text
 
 from .config import get_db_connection
@@ -12,8 +13,7 @@ class TableCleaner:
 
     @staticmethod
     def clean() -> None:
-        """
-        Clean StaticPress options from wp_options table.
+        """Clean StaticPress options from wp_options table.
 
         This replaces the TypeScript version:
         ```typescript
@@ -39,12 +39,6 @@ class TableCleaner:
         """
         with get_db_connection() as conn:
             # Delete StaticPress configuration options
-            conn.execute(
-                text("DELETE FROM wp_options WHERE option_name = 'StaticPress::static url'")
-            )
-            conn.execute(
-                text("DELETE FROM wp_options WHERE option_name = 'StaticPress::static dir'")
-            )
-            conn.execute(
-                text("DELETE FROM wp_options WHERE option_name = 'StaticPress::timeout'")
-            )
+            conn.execute(text("DELETE FROM wp_options WHERE option_name = 'StaticPress::static url'"))
+            conn.execute(text("DELETE FROM wp_options WHERE option_name = 'StaticPress::static dir'"))
+            conn.execute(text("DELETE FROM wp_options WHERE option_name = 'StaticPress::timeout'"))

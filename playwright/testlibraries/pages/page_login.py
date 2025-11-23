@@ -1,7 +1,8 @@
-"""
-Page Object Model for WordPress login page.
+"""Page Object Model for WordPress login page.
+
 This replaces PageLogin.ts from the TypeScript version.
 """
+
 from playwright.sync_api import Page
 
 
@@ -9,8 +10,7 @@ class PageLogin:
     """WordPress login page interactions."""
 
     def __init__(self, page: Page):
-        """
-        Initialize PageLogin with a Playwright page.
+        """Initialize PageLogin with a Playwright page.
 
         Args:
             page: Playwright Page object
@@ -18,8 +18,7 @@ class PageLogin:
         self.page = page
 
     def login(self, user_name: str, user_password: str) -> None:
-        """
-        Log in to WordPress with provided credentials.
+        """Log in to WordPress with provided credentials.
 
         This replaces the TypeScript method:
         ```typescript

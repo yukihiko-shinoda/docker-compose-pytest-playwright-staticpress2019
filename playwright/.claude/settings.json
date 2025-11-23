@@ -40,8 +40,11 @@
       "Bash(uv run invoke test.all:*)",
       "Bash(uv run invoke test.coverage:*)",
       "Bash(uv run invoke test:*)",
+      "Bash(uv run pytest:*)",
       "Edit(testlibraries/**)",
-      "Edit(tests/**)"
+      "Edit(tests/**)",
+      "Edit(/plugins/**)",
+      "Read(/plugins/**)"
     ],
     "deny": [
       "Bash(git commit:*)",

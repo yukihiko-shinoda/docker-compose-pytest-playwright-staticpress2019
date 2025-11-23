@@ -1,7 +1,8 @@
-"""
-Fixture loader for database test data.
+"""Fixture loader for database test data.
+
 This replaces FixtureLoader.ts from the TypeScript version.
 """
+
 from sqlalchemy import text
 
 from .config import get_db_connection
@@ -12,8 +13,7 @@ class FixtureLoader:
 
     @staticmethod
     def load(fixtures_path: str) -> None:
-        """
-        Load fixtures into the database.
+        """Load fixtures into the database.
 
         This replaces the TypeScript version:
         ```typescript
@@ -66,7 +66,7 @@ class FixtureLoader:
                     """),
                     {
                         "name": "StaticPress::static dir",
-                        "value": "/var/www/web/static/",
+                        "value": "/var/www/html/wp-content/staticpress/",
                         "autoload": "yes",
                     },
                 )
